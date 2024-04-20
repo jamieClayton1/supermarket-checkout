@@ -63,3 +63,15 @@ func calculatePrice(skus map[entity.SKU]int, fetchItemFunc FetchItemFunc) (int, 
 	}
 	return price, nil
 }
+
+func countSKUs(skus []entity.SKU) map[entity.SKU]int {
+	items := make(map[entity.SKU]int)
+	for _, sku := range skus {
+		if count, ok := items[sku]; ok {
+			items[sku] = count + 1
+		} else {
+			items[sku] = 1
+		}
+	}
+	return items
+}

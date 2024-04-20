@@ -43,13 +43,13 @@ func TestBatchPriceWithoutBatch(t *testing.T) {
 	}
 }
 
+// Calculates the correct price for a single item with no batch price or size
 func TestCalculatePrice(t *testing.T) {
 	fetchItemFunc := func(config *entity.FetchItemConfig) (*entity.FetchItemResult, error) {
 		return &entity.FetchItemResult{
 			Item: &entity.Item{
 				SKU:        config.SKU,
 				UnitPrice:  10,
-				BatchPrice: nil,
 			},
 		}, nil
 	}
@@ -61,6 +61,7 @@ func TestCalculatePrice(t *testing.T) {
 	assert.Equal(t, 10, price)
 }
 
+// Calculates the correct price for more than one item with no batch price or size
 func TestCalculatePriceMultipleSKUs(t *testing.T) {
 	fetchItemFunc := func(config *entity.FetchItemConfig) (*entity.FetchItemResult, error) {
 		return &entity.FetchItemResult{
@@ -79,6 +80,7 @@ func TestCalculatePriceMultipleSKUs(t *testing.T) {
 	assert.Equal(t, 20, price)
 }
 
+// Calculates the correct price for more than one item with different prices with no batch price or size
 func TestCalculatePriceMultipleSKUsDifferentPrices(t *testing.T) {
 	fetchItemFunc := func(config *entity.FetchItemConfig) (*entity.FetchItemResult, error) {
 		res := &entity.FetchItemResult{
@@ -102,6 +104,8 @@ func TestCalculatePriceMultipleSKUsDifferentPrices(t *testing.T) {
 	assert.Equal(t, 30, price)
 }
 
+// Calculates the correct price for more than one item with different price, duplicates and
+// with no batch price or size
 func TestCalculatePriceMultipleSKUsDuplicates(t *testing.T) {
 	fetchItemFunc := func(config *entity.FetchItemConfig) (*entity.FetchItemResult, error) {
 		res := &entity.FetchItemResult{
@@ -125,6 +129,7 @@ func TestCalculatePriceMultipleSKUsDuplicates(t *testing.T) {
 	assert.Equal(t, 50, price)
 }
 
+// Calculates the correct price for more than one item with different prices & batch pricing
 func TestCalculatePriceBatchPricing(t *testing.T) {
 	fetchItemFunc := func(config *entity.FetchItemConfig) (*entity.FetchItemResult, error) {
 		batchSize := 2
@@ -150,4 +155,39 @@ func TestCalculatePriceBatchPricing(t *testing.T) {
 	price, err := calculatePrice(skus, fetchItemFunc)
 	assert.NilError(t, err)
 	assert.Equal(t, 40, price)
+}
+
+
+// Count the SKUs from a given list of none duplicated SKUs
+func TestCountSKUs(t *testing.T) {
+	skus := []entity.SKU{"A", "B", "C"}
+	expected := map[entity.SKU]int{
+		"A": 1,
+		"B": 1,
+		"C": 1,
+	}
+	res := countSKUs(skus)
+	
+	assert.DeepEqual(t, expected, res)
+}
+
+
+// Given a list of SKUs with duplicates, the function should return a map with each SKU as a key and the value set to the number of occurrences in the list.
+func TestCountSKUs_WithDuplicates(t *testing.T) {
+	skus := []entity.SKU{"A", "B", "A", "C", "B", "A"}
+	expected := map[entity.SKU]int{
+		"A": 3,
+		"B": 2,
+		"C": 1,
+	}
+	result := countSKUs(skus)
+	assert.DeepEqual(t, expected, result)
+}
+
+// Given an empty list of SKUs, the function should return an empty map.
+func TestCountSKUs_EmptyList(t *testing.T) {
+	skus := []entity.SKU{}
+	expected := map[entity.SKU]int{}
+	result := countSKUs(skus)
+	assert.DeepEqual(t, expected, result)
 }
