@@ -7,16 +7,19 @@ import (
 	"supermarket-checkout/internal/service/item"
 )
 
+// Checkout service, containing an Item service
 type CheckoutService struct {
 	ItemService *item.ItemService
 }
 
+// Construct a checkout service
 func NewCheckoutService(itemService *item.ItemService) CheckoutService {
 	return CheckoutService{
 		ItemService: itemService,
 	}
 }
 
+// Fetch a price from the checkout service
 func (checkoutService *CheckoutService) FetchPrice(config *entity.FetchPriceConfig) (*entity.FetchPriceResult, error) {
 	price, err := calculatePrice(countSKUs(config.ItemSKUs), checkoutService.ItemService.FetchItem)
 	if err != nil {
@@ -27,6 +30,7 @@ func (checkoutService *CheckoutService) FetchPrice(config *entity.FetchPriceConf
 	}, nil
 }
 
+// Custom fetch item function type
 type FetchItemFunc = func(*entity.FetchItemConfig) (*entity.FetchItemResult, error)
 
 // Calculate batch pricing given the regular price, units purchased,

@@ -11,22 +11,26 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// API containing a service provider
 type API struct {
 	ServiceProvider *provider.ServiceProvider
 }
 
+// Construct a new API, given a particular service provider
 func NewAPI(serviceProvider *provider.ServiceProvider) *API {
 	return &API{
 		ServiceProvider: serviceProvider,
 	}
 }
 
+// Serve the API on port 80
 func (api API) Serve() {
 	router := mux.NewRouter()
 	router.HandleFunc("/checkout/price", FetchCheckoutPriceHandler(api.ServiceProvider)).Methods("POST")
-	log.Fatal(http.ListenAndServe(":80", router))
+	log.Fatal(http.ListenAndServe(":80", router)) // Customise behind an environment variable - for ease of use, we'll use default HTTP port
 }
 
+// Construct a handle for fetching a checkout price, given a service provider
 func FetchCheckoutPriceHandler(provider *provider.ServiceProvider) http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
 		body, err := UnpackBody[entity.FetchCheckoutPriceRequest](res, req)

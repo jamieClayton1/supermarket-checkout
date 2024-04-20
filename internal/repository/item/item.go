@@ -7,10 +7,12 @@ import (
 	"supermarket-checkout/internal/util"
 )
 
+// Local item repository implementation
 type LocalItemRepository struct {
 	store map[entity.SKU]entity.Item
 }
 
+// Construct a new local item repository with it's item store
 func NewLocalItemRepository() LocalItemRepository {
 	return LocalItemRepository{
 		map[entity.SKU]entity.Item{
@@ -38,6 +40,7 @@ func NewLocalItemRepository() LocalItemRepository {
 	}
 }
 
+// Fetch an item from the local item repository
 func (itemRepository *LocalItemRepository) FetchItem(config *repository.FetchItemConfig) (*repository.FetchItemResult, error) {
 	if item, ok := itemRepository.store[config.SKU]; ok {
 		return &repository.FetchItemResult{
