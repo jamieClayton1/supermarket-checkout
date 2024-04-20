@@ -37,7 +37,7 @@ type FetchPriceResult struct {
 
 type FetchItemFunc = func(*entity.FetchItemConfig) (*entity.FetchItemResult, error)
 
-// Calculate batch pricing given the regular price, units purchased, 
+// Calculate batch pricing given the regular price, units purchased,
 // special batch pricing and batch sizing to apply the price at
 func batchPrice(price int, units int, batchPrice int, batchSize int) int {
 	if batchPrice == 0 && batchSize == 0 {
@@ -49,7 +49,7 @@ func batchPrice(price int, units int, batchPrice int, batchSize int) int {
 	return (batches * batchPrice) + (regulars * price)
 }
 
-// Calculate price of a map of SKU counts, given a map of SKUs and 
+// Calculate price of a map of SKU counts, given a map of SKUs and
 // a function to fetch the relevant Item data
 func calculatePrice(skus map[entity.SKU]int, fetchItemFunc FetchItemFunc) (int, error) {
 	var price int

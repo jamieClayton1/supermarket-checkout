@@ -48,8 +48,8 @@ func TestCalculatePrice(t *testing.T) {
 	fetchItemFunc := func(config *entity.FetchItemConfig) (*entity.FetchItemResult, error) {
 		return &entity.FetchItemResult{
 			Item: &entity.Item{
-				SKU:        config.SKU,
-				UnitPrice:  10,
+				SKU:       config.SKU,
+				UnitPrice: 10,
 			},
 		}, nil
 	}
@@ -66,8 +66,8 @@ func TestCalculatePriceMultipleSKUs(t *testing.T) {
 	fetchItemFunc := func(config *entity.FetchItemConfig) (*entity.FetchItemResult, error) {
 		return &entity.FetchItemResult{
 			Item: &entity.Item{
-				SKU:        config.SKU,
-				UnitPrice:  10,
+				SKU:       config.SKU,
+				UnitPrice: 10,
 			},
 		}, nil
 	}
@@ -85,10 +85,10 @@ func TestCalculatePriceMultipleSKUsDifferentPrices(t *testing.T) {
 	fetchItemFunc := func(config *entity.FetchItemConfig) (*entity.FetchItemResult, error) {
 		res := &entity.FetchItemResult{
 			Item: &entity.Item{
-				SKU:        config.SKU,
+				SKU: config.SKU,
 			},
 		}
-		if (config.SKU == "A"){
+		if config.SKU == "A" {
 			res.UnitPrice = 10
 		} else {
 			res.UnitPrice = 20
@@ -110,10 +110,10 @@ func TestCalculatePriceMultipleSKUsDuplicates(t *testing.T) {
 	fetchItemFunc := func(config *entity.FetchItemConfig) (*entity.FetchItemResult, error) {
 		res := &entity.FetchItemResult{
 			Item: &entity.Item{
-				SKU:        config.SKU,
+				SKU: config.SKU,
 			},
 		}
-		if (config.SKU == "A"){
+		if config.SKU == "A" {
 			res.UnitPrice = 10
 		} else {
 			res.UnitPrice = 20
@@ -137,11 +137,11 @@ func TestCalculatePriceBatchPricing(t *testing.T) {
 		res := &entity.FetchItemResult{
 			Item: &entity.Item{
 				SKU:        config.SKU,
-				BatchSize: &batchSize,
+				BatchSize:  &batchSize,
 				BatchPrice: &batchPrice,
 			},
 		}
-		if (config.SKU == "A"){
+		if config.SKU == "A" {
 			res.UnitPrice = 10
 		} else {
 			res.UnitPrice = 20
@@ -157,7 +157,6 @@ func TestCalculatePriceBatchPricing(t *testing.T) {
 	assert.Equal(t, 40, price)
 }
 
-
 // Count the SKUs from a given list of none duplicated SKUs
 func TestCountSKUs(t *testing.T) {
 	skus := []entity.SKU{"A", "B", "C"}
@@ -167,10 +166,9 @@ func TestCountSKUs(t *testing.T) {
 		"C": 1,
 	}
 	res := countSKUs(skus)
-	
+
 	assert.DeepEqual(t, expected, res)
 }
-
 
 // Given a list of SKUs with duplicates, the function should return a map with each SKU as a key and the value set to the number of occurrences in the list.
 func TestCountSKUs_WithDuplicates(t *testing.T) {
