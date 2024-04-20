@@ -1,7 +1,6 @@
 package checkout
 
 import (
-	"errors"
 	"fmt"
 	"math"
 	"supermarket-checkout/internal/entity"
@@ -19,7 +18,13 @@ func NewCheckoutService(itemService *item.ItemService) CheckoutService {
 }
 
 func (checkoutService *CheckoutService) FetchPrice(config *FetchPriceConfig) (*FetchPriceResult, error) {
-	return nil, errors.New("method not implemented")
+	price, err := calculatePrice(countSKUs(config.ItemSKUs), checkoutService.ItemService.FetchItem)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching price from item service: %s", err)
+	}
+	return &FetchPriceResult{
+		Price: price,
+	}, nil
 }
 
 type FetchPriceConfig struct {
@@ -64,6 +69,8 @@ func calculatePrice(skus map[entity.SKU]int, fetchItemFunc FetchItemFunc) (int, 
 	return price, nil
 }
 
+// Count SKUs from a given slice of SKUs, returning a map with a key of SKU
+// and the value of it's corresponding count
 func countSKUs(skus []entity.SKU) map[entity.SKU]int {
 	items := make(map[entity.SKU]int)
 	for _, sku := range skus {
