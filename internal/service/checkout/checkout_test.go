@@ -1,6 +1,7 @@
 package checkout
 
 import (
+	"errors"
 	"supermarket-checkout/internal/entity"
 	"testing"
 
@@ -155,6 +156,19 @@ func TestCalculatePriceBatchPricing(t *testing.T) {
 	price, err := calculatePrice(skus, fetchItemFunc)
 	assert.NilError(t, err)
 	assert.Equal(t, 40, price)
+}
+
+// An error is returned when the fetch item func also returns an error
+func TestCalculatePriceFetchItemError(t *testing.T) {
+	fetchItemFunc := func(config *entity.FetchItemConfig) (*entity.FetchItemResult, error) {
+		return nil, errors.New("we returned an error")
+	}
+	skus := map[entity.SKU]int{
+		"A": 1,
+		"B": 5,
+	}
+	_, err := calculatePrice(skus, fetchItemFunc)
+	assert.Error(t, err, err.Error())
 }
 
 // Count the SKUs from a given list of none duplicated SKUs
