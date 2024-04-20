@@ -26,7 +26,7 @@ func NewAPI(serviceProvider *provider.ServiceProvider) *API {
 // Serve the API on port 80
 func (api API) Serve() {
 	router := mux.NewRouter()
-	router.HandleFunc("/checkout/price", FetchCheckoutPriceHandler(api.ServiceProvider)).Methods("POST")
+	router.HandleFunc("/checkout/price", FetchCheckoutPriceHandler(api.ServiceProvider)).Methods("POST") // Use POST as pricing schema is not idempotent
 	log.Fatal(http.ListenAndServe(":80", router)) // Customise behind an environment variable - for ease of use, we'll use default HTTP port
 }
 
