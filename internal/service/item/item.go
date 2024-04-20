@@ -7,11 +7,13 @@ import (
 )
 
 type ItemService struct {
-	repository.ItemRepository
+	ItemRepository repository.ItemRepository
 }
 
-func NewItemService() ItemService {
-	return ItemService{}
+func NewItemService(itemRepository repository.ItemRepository) ItemService {
+	return ItemService{
+		ItemRepository: itemRepository,
+	}
 }
 
 func (itemService *ItemService) FetchItem(config *entity.FetchItemConfig) (*entity.FetchItemResult, error) {
@@ -19,7 +21,7 @@ func (itemService *ItemService) FetchItem(config *entity.FetchItemConfig) (*enti
 		SKU: config.SKU,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("error fetching item from item repository: %s", err)
+		return nil, fmt.Errorf("fetching item: %s", err)
 	}
 	return &entity.FetchItemResult{
 		Item: res.Item,

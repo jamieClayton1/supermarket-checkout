@@ -17,23 +17,17 @@ func NewCheckoutService(itemService *item.ItemService) CheckoutService {
 	}
 }
 
-func (checkoutService *CheckoutService) FetchPrice(config *FetchPriceConfig) (*FetchPriceResult, error) {
+func (checkoutService *CheckoutService) FetchPrice(config *entity.FetchPriceConfig) (*entity.FetchPriceResult, error) {
 	price, err := calculatePrice(countSKUs(config.ItemSKUs), checkoutService.ItemService.FetchItem)
 	if err != nil {
-		return nil, fmt.Errorf("error fetching price from item service: %s", err)
+		return nil, fmt.Errorf("fetching price: %s", err)
 	}
-	return &FetchPriceResult{
+	return &entity.FetchPriceResult{
 		Price: price,
 	}, nil
 }
 
-type FetchPriceConfig struct {
-	ItemSKUs []entity.SKU
-}
 
-type FetchPriceResult struct {
-	Price int
-}
 
 type FetchItemFunc = func(*entity.FetchItemConfig) (*entity.FetchItemResult, error)
 
@@ -54,16 +48,16 @@ func batchPrice(price int, units int, batchPrice int, batchSize int) int {
 func calculatePrice(skus map[entity.SKU]int, fetchItemFunc FetchItemFunc) (int, error) {
 	var price int
 	for sku, units := range skus {
-		item, err := fetchItemFunc(&entity.FetchItemConfig{
+		res, err := fetchItemFunc(&entity.FetchItemConfig{
 			SKU: sku,
 		})
 		if err != nil {
-			return 0, fmt.Errorf("error when pricing items: %s", err)
+			return 0, err
 		}
-		if item.BatchSize != nil && item.BatchPrice != nil {
-			price += batchPrice(item.UnitPrice, units, *item.BatchPrice, *item.BatchSize)
+		if res.Item.BatchSize != nil && res.Item.BatchPrice != nil {
+			price += batchPrice(res.Item.UnitPrice, units, *res.Item.BatchPrice, *res.Item.BatchSize)
 		} else {
-			price += item.UnitPrice * units
+			price += res.Item.UnitPrice * units
 		}
 	}
 	return price, nil

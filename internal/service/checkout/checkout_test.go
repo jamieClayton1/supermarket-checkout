@@ -89,9 +89,9 @@ func TestCalculatePriceMultipleSKUsDifferentPrices(t *testing.T) {
 			},
 		}
 		if config.SKU == "A" {
-			res.UnitPrice = 10
+			res.Item.UnitPrice = 10
 		} else {
-			res.UnitPrice = 20
+			res.Item.UnitPrice = 20
 		}
 		return res, nil
 	}
@@ -114,9 +114,9 @@ func TestCalculatePriceMultipleSKUsDuplicates(t *testing.T) {
 			},
 		}
 		if config.SKU == "A" {
-			res.UnitPrice = 10
+			res.Item.UnitPrice = 10
 		} else {
-			res.UnitPrice = 20
+			res.Item.UnitPrice = 20
 		}
 		return res, nil
 	}
@@ -142,9 +142,9 @@ func TestCalculatePriceBatchPricing(t *testing.T) {
 			},
 		}
 		if config.SKU == "A" {
-			res.UnitPrice = 10
+			res.Item.UnitPrice = 10
 		} else {
-			res.UnitPrice = 20
+			res.Item.UnitPrice = 20
 		}
 		return res, nil
 	}

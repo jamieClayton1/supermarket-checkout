@@ -10,9 +10,21 @@ type Item struct {
 }
 
 type FetchItemConfig struct {
-	SKU
+	SKU SKU
 }
 
 type FetchItemResult struct {
-	*Item
+	Item *Item
+}
+
+type FetchPriceConfig struct {
+	ItemSKUs []SKU
+}
+
+type FetchPriceResult struct {
+	Price int
+}
+
+type FetchCheckoutPriceRequest struct {
+	ItemSKUs []SKU `json:"item_skus"`
 }
