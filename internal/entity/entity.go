@@ -8,3 +8,11 @@ type Item struct {
 	BatchSize  *int
 	BatchPrice *int
 }
+
+type FetchItemConfig struct {
+	SKU
+}
+
+type FetchItemResult struct {
+	*Item
+}
