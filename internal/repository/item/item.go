@@ -7,7 +7,7 @@ import (
 	"supermarket-checkout/internal/util"
 )
 
-type LocalItemRepository struct{
+type LocalItemRepository struct {
 	store map[entity.SKU]entity.Item
 }
 

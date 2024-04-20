@@ -27,8 +27,6 @@ func (checkoutService *CheckoutService) FetchPrice(config *entity.FetchPriceConf
 	}, nil
 }
 
-
-
 type FetchItemFunc = func(*entity.FetchItemConfig) (*entity.FetchItemResult, error)
 
 // Calculate batch pricing given the regular price, units purchased,

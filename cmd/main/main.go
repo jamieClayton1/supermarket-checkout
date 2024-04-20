@@ -5,7 +5,7 @@ import (
 	"supermarket-checkout/internal/provider"
 )
 
-func main(){
+func main() {
 	services := provider.NewApiServiceProvider()
 	api.NewAPI(&services).Serve()
 }

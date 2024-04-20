@@ -71,6 +71,7 @@ func Send(res http.ResponseWriter, payload map[string]any) {
 }
 
 // Send error with json response that has the following shape:
+//
 //	{
 //		"error": message
 //	}

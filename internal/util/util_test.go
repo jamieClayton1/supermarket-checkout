@@ -9,7 +9,7 @@ import (
 // Test pointer simple functionality, i.e a string
 func TestPointer(t *testing.T) {
 	val := "testing"
-	expected := &val	
+	expected := &val
 	res := Pointer(val)
 
 	assert.DeepEqual(t, expected, res)
