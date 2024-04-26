@@ -9,7 +9,7 @@ type ItemRepository interface {
 
 // Interface for fetching an Item
 type ItemFetcher interface {
-	FetchItem(*FetchItemConfig) (*FetchItemResult, error)
+	FetchItem(sku string) (*entity.Item, error)
 }
 
 // DTO for the configuration of a fetch item function

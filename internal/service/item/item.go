@@ -19,14 +19,10 @@ func NewItemService(itemRepository repository.ItemRepository) ItemService {
 }
 
 // Fetch an item from the item service
-func (itemService *ItemService) FetchItem(config *entity.FetchItemConfig) (*entity.FetchItemResult, error) {
-	res, err := itemService.ItemRepository.FetchItem(&repository.FetchItemConfig{
-		SKU: config.SKU,
-	})
+func (itemService *ItemService) FetchItem(sku string) (*entity.Item, error) {
+	res, err := itemService.ItemRepository.FetchItem(sku)
 	if err != nil {
 		return nil, fmt.Errorf("fetching item: %s", err)
 	}
-	return &entity.FetchItemResult{
-		Item: res.Item,
-	}, nil
+	return res, nil
 }

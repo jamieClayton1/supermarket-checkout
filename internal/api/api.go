@@ -42,15 +42,13 @@ func FetchCheckoutPriceHandler(provider *provider.ServiceProvider) http.HandlerF
 			SendError(res, http.StatusBadRequest, "provide a list of item SKUs with a length greater than 0")
 			return
 		}
-		result, err := provider.CheckoutService.FetchPrice(&entity.FetchPriceConfig{
-			ItemSKUs: body.ItemSKUs,
-		})
+		price, err := provider.CheckoutService.FetchPrice(body.ItemSKUs)
 		if err != nil {
 			SendError(res, http.StatusInternalServerError, err.Error())
 			return
 		}
 		Send(res, map[string]any{
-			"price": result.Price,
+			"price": price,
 		})
 	}
 }

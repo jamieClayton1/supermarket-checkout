@@ -46,12 +46,10 @@ func TestBatchPriceWithoutBatch(t *testing.T) {
 
 // Calculates the correct price for a single item with no batch price or size
 func TestCalculatePrice(t *testing.T) {
-	fetchItemFunc := func(config *entity.FetchItemConfig) (*entity.FetchItemResult, error) {
-		return &entity.FetchItemResult{
-			Item: &entity.Item{
-				SKU:       config.SKU,
+	fetchItemFunc := func(sku string) (*entity.Item, error) {
+		return &entity.Item{
+				SKU:       sku,
 				UnitPrice: 10,
-			},
 		}, nil
 	}
 	skus := map[entity.SKU]int{
@@ -64,12 +62,10 @@ func TestCalculatePrice(t *testing.T) {
 
 // Calculates the correct price for more than one item with no batch price or size
 func TestCalculatePriceMultipleSKUs(t *testing.T) {
-	fetchItemFunc := func(config *entity.FetchItemConfig) (*entity.FetchItemResult, error) {
-		return &entity.FetchItemResult{
-			Item: &entity.Item{
-				SKU:       config.SKU,
-				UnitPrice: 10,
-			},
+	fetchItemFunc := func(sku string) (*entity.Item, error) {
+		return &entity.Item{
+			SKU:       sku,
+			UnitPrice: 10,
 		}, nil
 	}
 	skus := map[entity.SKU]int{
@@ -83,16 +79,14 @@ func TestCalculatePriceMultipleSKUs(t *testing.T) {
 
 // Calculates the correct price for more than one item with different prices with no batch price or size
 func TestCalculatePriceMultipleSKUsDifferentPrices(t *testing.T) {
-	fetchItemFunc := func(config *entity.FetchItemConfig) (*entity.FetchItemResult, error) {
-		res := &entity.FetchItemResult{
-			Item: &entity.Item{
-				SKU: config.SKU,
-			},
+	fetchItemFunc := func(sku string) (*entity.Item, error) {
+		res := &entity.Item{
+			SKU: sku,
 		}
-		if config.SKU == "A" {
-			res.Item.UnitPrice = 10
+		if sku == "A" {
+			res.UnitPrice = 10
 		} else {
-			res.Item.UnitPrice = 20
+			res.UnitPrice = 20
 		}
 		return res, nil
 	}
@@ -108,16 +102,14 @@ func TestCalculatePriceMultipleSKUsDifferentPrices(t *testing.T) {
 // Calculates the correct price for more than one item with different price, duplicates and
 // with no batch price or size
 func TestCalculatePriceMultipleSKUsDuplicates(t *testing.T) {
-	fetchItemFunc := func(config *entity.FetchItemConfig) (*entity.FetchItemResult, error) {
-		res := &entity.FetchItemResult{
-			Item: &entity.Item{
-				SKU: config.SKU,
-			},
+	fetchItemFunc := func(sku string) (*entity.Item, error) {
+		res := &entity.Item{
+			SKU: sku,
 		}
-		if config.SKU == "A" {
-			res.Item.UnitPrice = 10
+		if sku == "A" {
+			res.UnitPrice = 10
 		} else {
-			res.Item.UnitPrice = 20
+			res.UnitPrice = 20
 		}
 		return res, nil
 	}
@@ -132,20 +124,18 @@ func TestCalculatePriceMultipleSKUsDuplicates(t *testing.T) {
 
 // Calculates the correct price for more than one item with different prices & batch pricing
 func TestCalculatePriceBatchPricing(t *testing.T) {
-	fetchItemFunc := func(config *entity.FetchItemConfig) (*entity.FetchItemResult, error) {
+	fetchItemFunc := func(sku string) (*entity.Item, error) {
 		batchSize := 2
 		batchPrice := 5
-		res := &entity.FetchItemResult{
-			Item: &entity.Item{
-				SKU:        config.SKU,
-				BatchSize:  &batchSize,
-				BatchPrice: &batchPrice,
-			},
+		res := &entity.Item{
+			SKU:        sku,
+			BatchSize:  &batchSize,
+			BatchPrice: &batchPrice,
 		}
-		if config.SKU == "A" {
-			res.Item.UnitPrice = 10
+		if sku == "A" {
+			res.UnitPrice = 10
 		} else {
-			res.Item.UnitPrice = 20
+			res.UnitPrice = 20
 		}
 		return res, nil
 	}
@@ -160,7 +150,7 @@ func TestCalculatePriceBatchPricing(t *testing.T) {
 
 // An error is returned when the fetch item func also returns an error
 func TestCalculatePriceFetchItemError(t *testing.T) {
-	fetchItemFunc := func(config *entity.FetchItemConfig) (*entity.FetchItemResult, error) {
+	fetchItemFunc := func(sku string) (*entity.Item, error) {
 		return nil, errors.New("we returned an error")
 	}
 	skus := map[entity.SKU]int{

@@ -20,18 +20,17 @@ func NewCheckoutService(itemService *item.ItemService) CheckoutService {
 }
 
 // Fetch a price from the checkout service
-func (checkoutService *CheckoutService) FetchPrice(config *entity.FetchPriceConfig) (*entity.FetchPriceResult, error) {
-	price, err := calculatePrice(countSKUs(config.ItemSKUs), checkoutService.ItemService.FetchItem)
+func (checkoutService *CheckoutService) FetchPrice(items []entity.SKU) (price int, err error) {
+	price, err = calculatePrice(countSKUs(items), checkoutService.ItemService.FetchItem)
 	if err != nil {
-		return nil, fmt.Errorf("fetching price: %s", err)
+		err = fmt.Errorf("fetching price: %s", err)
+		return 
 	}
-	return &entity.FetchPriceResult{
-		Price: price,
-	}, nil
+	return price, nil
 }
 
 // Custom fetch item function type
-type FetchItemFunc = func(*entity.FetchItemConfig) (*entity.FetchItemResult, error)
+type FetchItemFunc = func(sku string) (*entity.Item, error)
 
 // Calculate batch pricing given the regular price, units purchased,
 // special batch pricing and batch sizing to apply the price at
@@ -50,16 +49,14 @@ func batchPrice(price int, units int, batchPrice int, batchSize int) int {
 func calculatePrice(skus map[entity.SKU]int, fetchItemFunc FetchItemFunc) (int, error) {
 	var price int
 	for sku, units := range skus {
-		res, err := fetchItemFunc(&entity.FetchItemConfig{
-			SKU: sku,
-		})
+		res, err := fetchItemFunc(sku)
 		if err != nil {
 			return 0, err
 		}
-		if res.Item.BatchSize != nil && res.Item.BatchPrice != nil {
-			price += batchPrice(res.Item.UnitPrice, units, *res.Item.BatchPrice, *res.Item.BatchSize)
+		if res.BatchSize != nil && res.BatchPrice != nil {
+			price += batchPrice(res.UnitPrice, units, *res.BatchPrice, *res.BatchSize)
 		} else {
-			price += res.Item.UnitPrice * units
+			price += res.UnitPrice * units
 		}
 	}
 	return price, nil
