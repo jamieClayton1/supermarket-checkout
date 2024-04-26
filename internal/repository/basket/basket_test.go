@@ -8,6 +8,7 @@ import (
 	"gotest.tools/assert"
 )
 
+// When we put an item into the basket, we can fetch it
 func TestLocalBasketRepository_PutBasketFetchBasket(t *testing.T) {
 	repo := NewLocalBasketRepository()
 	item := entity.Item{
@@ -27,6 +28,7 @@ func TestLocalBasketRepository_PutBasketFetchBasket(t *testing.T) {
 	assert.DeepEqual(t, expected, res)
 }
 
+// When basket doesn't exist, an error is returned
 func TestLocalBasketRepository_FetchBasket_NotExistErrors(t *testing.T) {
 	repo := NewLocalBasketRepository()
 	_, err := repo.FetchBasket("invalid")
@@ -34,6 +36,7 @@ func TestLocalBasketRepository_FetchBasket_NotExistErrors(t *testing.T) {
 	assert.Error(t, err, err.Error())
 }
 
+// When a nil item is provided, an error is returned
 func TestLocalBasketRepository_PutBasketItem_NilItemErrors(t *testing.T) {
 	repo := NewLocalBasketRepository()
 	_, err := repo.PutBasketItem(nil, nil)
@@ -41,6 +44,7 @@ func TestLocalBasketRepository_PutBasketItem_NilItemErrors(t *testing.T) {
 	assert.Error(t, err, err.Error())
 }
 
+// When a nil basketId is provided, we generate a new one
 func TestLocalBasketRepository_PutBasketItem_NilIdGeneratesId(t *testing.T) {
 	repo := NewLocalBasketRepository()
 	item := entity.Item{

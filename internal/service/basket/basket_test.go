@@ -10,6 +10,7 @@ import (
 	"gotest.tools/assert"
 )
 
+// When a valid basket if is provided, a basket is returned
 func TestBasketService_FetchBasket_ValidId(t *testing.T) {
 	basket := entity.Basket{
 		Items: []*entity.Item{},
@@ -26,6 +27,7 @@ func TestBasketService_FetchBasket_ValidId(t *testing.T) {
 	assert.DeepEqual(t, expected, *response)
 }
 
+// When an invalid id is provided, an error is returned
 func TestBasketService_FetchBasket_InvalidId(t *testing.T) {
 	expectedErr := fmt.Errorf("error, invalid")
 	basketId := "invalid"
@@ -37,6 +39,7 @@ func TestBasketService_FetchBasket_InvalidId(t *testing.T) {
 	assert.Error(t, err, expectedErr.Error())
 }
 
+// When we add an item to the basket, no error and the basketId is returned
 func TestBasketService_AddBasketItem_ItemAndIdNotNil(t *testing.T) {
 	basketId := "valid"
 	item := entity.Item{}
@@ -51,6 +54,8 @@ func TestBasketService_AddBasketItem_ItemAndIdNotNil(t *testing.T) {
 	assert.DeepEqual(t, expected, response)
 }
 
+
+// When we add an item to the basket without a provided basketId, no error and the new basketId is returned
 func TestBasketService_AddBasketItem_IdNilGeneratesId(t *testing.T) {
 	basketId := "new"
 	item := entity.Item{}
@@ -65,6 +70,7 @@ func TestBasketService_AddBasketItem_IdNilGeneratesId(t *testing.T) {
 	assert.DeepEqual(t, expected, response)
 }
 
+// When we add an item to the basket without a provided item, an error is returned
 func TestBasketService_AddBasketItem_ItemNilErrors(t *testing.T) {
 	expectedErr := fmt.Errorf("no item")
 	basketId := "valid"
@@ -77,6 +83,7 @@ func TestBasketService_AddBasketItem_ItemNilErrors(t *testing.T) {
 	assert.Error(t, err, expectedErr.Error())
 }
 
+// When we get an error from the basket repository, an error is returned from the service
 func TestBasketService_AddBasketItem_ErrWithRepoErr(t *testing.T) {
 	expectedErr := fmt.Errorf("any err")
 	basketId := "valid"

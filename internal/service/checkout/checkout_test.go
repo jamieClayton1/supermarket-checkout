@@ -13,6 +13,7 @@ import (
 	"gotest.tools/assert"
 )
 
+// When we scan an item, no error is returned and a basketId is returned
 func TestCheckoutService_ScanItem_SKUFoundAndIdNotNil(t *testing.T) {
 	basketId := "valid"
 	sku := "A"
@@ -35,6 +36,7 @@ func TestCheckoutService_ScanItem_SKUFoundAndIdNotNil(t *testing.T) {
 	assert.DeepEqual(t, expected, response)
 }
 
+// When we scan an item with no basketId, no error and a basketId is returned
 func TestCheckoutService_ScanItem_IdNil(t *testing.T) {
 	basketId := "new"
 	sku := "A"
@@ -57,6 +59,7 @@ func TestCheckoutService_ScanItem_IdNil(t *testing.T) {
 	assert.DeepEqual(t, expected, response)
 }
 
+// When we scan an item with an invalid SKU, an error is returned
 func TestCheckoutService_ScanItem_SkuNotFoundErrors(t *testing.T) {
 	expectedErr := errors.New("test error")
 	basketId := "new"
@@ -72,7 +75,7 @@ func TestCheckoutService_ScanItem_SkuNotFoundErrors(t *testing.T) {
 	assert.Error(t, err, err.Error())
 }
 
-
+// When we fetch the parice of a basket with a valid basket id, the price is returned
 func TestCheckoutService_FetchPrice_ValidBasketId(t *testing.T) {
 	basketId := "valid"
 	bskt := entity.Basket{
@@ -97,6 +100,7 @@ func TestCheckoutService_FetchPrice_ValidBasketId(t *testing.T) {
 	assert.DeepEqual(t, expected, response)
 }
 
+// When we fetch the price of an invalid basket id, an error is returned
 func TestCheckoutService_FetchPrice_InvalidBasketIdErrors(t *testing.T) {
 	basketId := "invalid"
 
