@@ -30,6 +30,30 @@ func (api API) Serve() {
 	log.Fatal(http.ListenAndServe(":80", router)) // Customise behind an environment variable - for ease of use, we'll use default HTTP port
 }
 
+// Construct a handle for scanning an item, given a service provider
+func ScanItemHandler(provider *provider.ServiceProvider) http.HandlerFunc {
+	return func(res http.ResponseWriter, req *http.Request) {
+		body, err := UnpackBody[entity.ScanItemRequest](res, req)
+		if err != nil {
+			SendError(res, http.StatusBadRequest, err.Error())
+			return
+		}
+		if body.SKU == "" {
+			SendError(res, http.StatusBadRequest, "provide a sku")
+			return
+		}
+		basket_id, err := provider.CheckoutService.ScanItem(body.SKU, body.BasketId)
+		if err != nil {
+			SendError(res, http.StatusInternalServerError, err.Error())
+			return
+		}
+		Send(res, map[string]any{
+			"basket_id": basket_id,
+		})
+	}
+}
+
+
 // Construct a handle for fetching a checkout price, given a service provider
 func FetchCheckoutPriceHandler(provider *provider.ServiceProvider) http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
@@ -38,11 +62,11 @@ func FetchCheckoutPriceHandler(provider *provider.ServiceProvider) http.HandlerF
 			SendError(res, http.StatusBadRequest, err.Error())
 			return
 		}
-		if len(body.ItemSKUs) == 0 {
-			SendError(res, http.StatusBadRequest, "provide a list of item SKUs with a length greater than 0")
+		if body.BasketId == "" {
+			SendError(res, http.StatusBadRequest, "provide a basket_id")
 			return
 		}
-		price, err := provider.CheckoutService.FetchPrice(body.ItemSKUs)
+		price, err := provider.CheckoutService.FetchPrice(body.BasketId)
 		if err != nil {
 			SendError(res, http.StatusInternalServerError, err.Error())
 			return

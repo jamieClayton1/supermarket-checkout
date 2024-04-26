@@ -17,5 +17,11 @@ type Basket struct {
 
 // Request body representation of a fetch checkout price request
 type FetchCheckoutPriceRequest struct {
-	ItemSKUs []SKU `json:"item_skus"`
+	BasketId string `json:"basket_id"`
+}
+
+// Request body representation of a scan item request
+type ScanItemRequest struct {
+	BasketId *string `json:"basket_id"`
+	SKU string `json:"sku"`
 }
