@@ -3,7 +3,6 @@ package item
 import (
 	"errors"
 	"supermarket-checkout/internal/entity"
-	"supermarket-checkout/internal/repository"
 	"supermarket-checkout/internal/util"
 )
 
@@ -41,11 +40,9 @@ func NewLocalItemRepository() LocalItemRepository {
 }
 
 // Fetch an item from the local item repository
-func (itemRepository *LocalItemRepository) FetchItem(config *repository.FetchItemConfig) (*repository.FetchItemResult, error) {
-	if item, ok := itemRepository.store[config.SKU]; ok {
-		return &repository.FetchItemResult{
-			Item: &item,
-		}, nil
+func (itemRepository *LocalItemRepository) FetchItem(sku string) (*entity.Item, error) {
+	if item, ok := itemRepository.store[sku]; ok {
+		return &item, nil
 	}
 	return nil, errors.New("no item found with that SKU")
 }

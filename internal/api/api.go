@@ -26,31 +26,49 @@ func NewAPI(serviceProvider *provider.ServiceProvider) *API {
 // Serve the API on port 80
 func (api API) Serve() {
 	router := mux.NewRouter()
-	router.HandleFunc("/checkout/price", FetchCheckoutPriceHandler(api.ServiceProvider)).Methods("POST") // Use POST as pricing schema is not idempotent
-	log.Fatal(http.ListenAndServe(":80", router)) // Customise behind an environment variable - for ease of use, we'll use default HTTP port
+	router.HandleFunc("/checkout/scan", ScanItemHandler(api.ServiceProvider)).Methods("POST")
+	router.HandleFunc("/checkout/{basketId}/price", FetchCheckoutPriceHandler(api.ServiceProvider)).Methods("GET")
+	log.Fatal(http.ListenAndServe(":80", router))                                                        // Customise behind an environment variable - for ease of use, we'll use default HTTP port
 }
 
-// Construct a handle for fetching a checkout price, given a service provider
-func FetchCheckoutPriceHandler(provider *provider.ServiceProvider) http.HandlerFunc {
+// Construct a handle for scanning an item, given a service provider
+func ScanItemHandler(provider *provider.ServiceProvider) http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
-		body, err := UnpackBody[entity.FetchCheckoutPriceRequest](res, req)
+		body, err := UnpackBody[entity.ScanItemRequest](res, req)
 		if err != nil {
 			SendError(res, http.StatusBadRequest, err.Error())
 			return
 		}
-		if len(body.ItemSKUs) == 0 {
-			SendError(res, http.StatusBadRequest, "provide a list of item SKUs with a length greater than 0")
+		if body.SKU == "" {
+			SendError(res, http.StatusBadRequest, "provide a sku")
 			return
 		}
-		result, err := provider.CheckoutService.FetchPrice(&entity.FetchPriceConfig{
-			ItemSKUs: body.ItemSKUs,
-		})
+		basket_id, err := provider.CheckoutService.ScanItem(body.SKU, body.BasketId)
 		if err != nil {
 			SendError(res, http.StatusInternalServerError, err.Error())
 			return
 		}
 		Send(res, map[string]any{
-			"price": result.Price,
+			"basket_id": basket_id,
+		})
+	}
+}
+
+// Construct a handle for fetching a checkout price, given a service provider
+func FetchCheckoutPriceHandler(provider *provider.ServiceProvider) http.HandlerFunc {
+	return func(res http.ResponseWriter, req *http.Request) {
+		params := mux.Vars(req)
+		if params["basketId"] == "" {
+			SendError(res, http.StatusBadRequest, "provide a valid basketId")
+			return
+		}
+		price, err := provider.CheckoutService.FetchPrice(params["basketId"])
+		if err != nil {
+			SendError(res, http.StatusInternalServerError, err.Error())
+			return
+		}
+		Send(res, map[string]any{
+			"price": price,
 		})
 	}
 }

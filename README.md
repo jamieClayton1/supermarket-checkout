@@ -38,10 +38,30 @@ To run the built binary:
 
 To test the endpoint: 
 
+
+Start scanning:
 ```
-curl --location 'http://localhost:80/checkout/price' \
+curl --location 'http://localhost:80/checkout/scan' \
 --header 'Content-Type: application/json' \
 --data '{
-    "item_skus": ["A", "B", "B", "C", "D"]
+    "sku": "A",
 }'
+```
+
+Use the response ``basket_id`` to add more items to the basket:
+
+```
+curl --location 'http://localhost:80/checkout/scan' \
+--header 'Content-Type: application/json' \
+--data '{
+    "sku": "B",
+    "basket_id":"63728163-1166-42fc-842f-3ec8f4053245"
+}'
+```
+
+To check the price of your basket, provide the ``basket_id``:
+
+```
+curl --location 'http://localhost:80/checkout/63728163-1166-42fc-842f-3ec8f4053245/price' \
+--header 'Content-Type: application/json' 
 ```

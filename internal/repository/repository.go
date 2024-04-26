@@ -4,20 +4,11 @@ import "supermarket-checkout/internal/entity"
 
 // Item repository interface
 type ItemRepository interface {
-	ItemFetcher
+	FetchItem(sku string) (*entity.Item, error)
 }
 
-// Interface for fetching an Item
-type ItemFetcher interface {
-	FetchItem(*FetchItemConfig) (*FetchItemResult, error)
-}
-
-// DTO for the configuration of a fetch item function
-type FetchItemConfig struct {
-	entity.SKU
-}
-
-// DTO for the resulting value of afetch item function
-type FetchItemResult struct {
-	*entity.Item
+// Basket repository interface
+type BasketRepository interface {
+	FetchBasket(basketId string) (*entity.Basket, error)
+	AddBasketItem(item *entity.Item, basketId *string) (string, error)
 }
