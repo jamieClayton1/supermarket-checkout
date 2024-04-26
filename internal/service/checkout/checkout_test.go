@@ -1,8 +1,8 @@
 package checkout
 
 import (
-	"errors"
 	"supermarket-checkout/internal/entity"
+	"supermarket-checkout/internal/util"
 	"testing"
 
 	"gotest.tools/assert"
@@ -44,152 +44,144 @@ func TestBatchPriceWithoutBatch(t *testing.T) {
 	}
 }
 
-// Calculates the correct price for a single item with no batch price or size
-func TestCalculatePrice(t *testing.T) {
-	fetchItemFunc := func(sku string) (*entity.Item, error) {
-		return &entity.Item{
-				SKU:       sku,
-				UnitPrice: 10,
-		}, nil
+// Calculates the correct price for multiple items with batch pricing
+func TestCalculatePrice_MultipleItemsWithBatchPricing(t *testing.T) {
+	// Arrange
+	items := []*entity.Item{
+		{
+			SKU:        "A",
+			UnitPrice:  100,
+			BatchSize:  util.Pointer(3),
+			BatchPrice: util.Pointer(250),
+		},
+		{
+			SKU:        "A",
+			UnitPrice:  100,
+			BatchSize:  util.Pointer(3),
+			BatchPrice: util.Pointer(250),
+		},
+		{
+			SKU:        "A",
+			UnitPrice:  100,
+			BatchSize:  util.Pointer(3),
+			BatchPrice: util.Pointer(250),
+		},
+		{
+			SKU:        "B",
+			UnitPrice:  50,
+			BatchSize:  util.Pointer(2),
+			BatchPrice: util.Pointer(80),
+		},
+		{
+			SKU:        "B",
+			UnitPrice:  50,
+			BatchSize:  util.Pointer(2),
+			BatchPrice: util.Pointer(80),
+		},
+		{
+			SKU:       "C",
+			UnitPrice: 30,
+		},
 	}
-	skus := map[entity.SKU]int{
-		"A": 1,
-	}
-	price, err := calculatePrice(skus, fetchItemFunc)
+
+	// Act
+	price, err := calculatePrice(items)
+
+	// Assert
 	assert.NilError(t, err)
-	assert.Equal(t, 10, price)
+	assert.Equal(t, 360, price)
 }
 
-// Calculates the correct price for more than one item with no batch price or size
-func TestCalculatePriceMultipleSKUs(t *testing.T) {
-	fetchItemFunc := func(sku string) (*entity.Item, error) {
-		return &entity.Item{
-			SKU:       sku,
-			UnitPrice: 10,
-		}, nil
+// Calculates the correct price for multiple items with no batch pricing
+func TestCalculatePrice_MultipleItemsNoBatchPricing(t *testing.T) {
+	// Arrange
+	items := []*entity.Item{
+		{
+			SKU:        "A",
+			UnitPrice:  100,
+		},
+		{
+			SKU:        "A",
+			UnitPrice:  100,
+		},
+		{
+			SKU:        "A",
+			UnitPrice:  100,
+		},
+		{
+			SKU:        "B",
+			UnitPrice:  50,
+		},
+		{
+			SKU:        "B",
+			UnitPrice:  50,
+		},
+		{
+			SKU:       "C",
+			UnitPrice: 30,
+		},
 	}
-	skus := map[entity.SKU]int{
-		"A": 1,
-		"B": 1,
-	}
-	price, err := calculatePrice(skus, fetchItemFunc)
+
+	// Act
+	price, err := calculatePrice(items)
+
+	// Assert
 	assert.NilError(t, err)
-	assert.Equal(t, 20, price)
+	assert.Equal(t, 430, price)
 }
 
-// Calculates the correct price for more than one item with different prices with no batch price or size
-func TestCalculatePriceMultipleSKUsDifferentPrices(t *testing.T) {
-	fetchItemFunc := func(sku string) (*entity.Item, error) {
-		res := &entity.Item{
-			SKU: sku,
-		}
-		if sku == "A" {
-			res.UnitPrice = 10
-		} else {
-			res.UnitPrice = 20
-		}
-		return res, nil
+// Calculates the correct price for a single item with no batch pricing
+func TestCalculatePrice_SingleItemNoBatchPricing(t *testing.T) {
+	// Arrange
+	items := []*entity.Item{
+		{
+			SKU:       "A",
+			UnitPrice: 100,
+		},
 	}
-	skus := map[entity.SKU]int{
-		"A": 1,
-		"B": 1,
-	}
-	price, err := calculatePrice(skus, fetchItemFunc)
+
+	// Act
+	price, err := calculatePrice(items)
+
+	// Assert
 	assert.NilError(t, err)
-	assert.Equal(t, 30, price)
+	assert.Equal(t, 100, price)
 }
 
-// Calculates the correct price for more than one item with different price, duplicates and
-// with no batch price or size
-func TestCalculatePriceMultipleSKUsDuplicates(t *testing.T) {
-	fetchItemFunc := func(sku string) (*entity.Item, error) {
-		res := &entity.Item{
-			SKU: sku,
-		}
-		if sku == "A" {
-			res.UnitPrice = 10
-		} else {
-			res.UnitPrice = 20
-		}
-		return res, nil
+// Calculates the correct price for a single item with batch pricing
+func TestCalculatePrice_SingleItemWithBatchPricing(t *testing.T) {
+	// Arrange
+	items := []*entity.Item{
+		{
+			SKU:        "A",
+			UnitPrice:  100,
+			BatchSize:  util.Pointer(1),
+			BatchPrice: util.Pointer(400),
+		},
 	}
-	skus := map[entity.SKU]int{
-		"A": 1,
-		"B": 2,
-	}
-	price, err := calculatePrice(skus, fetchItemFunc)
+
+	// Act
+	price, err := calculatePrice(items)
+
+	// Assert
 	assert.NilError(t, err)
-	assert.Equal(t, 50, price)
+	assert.Equal(t, 400, price)
 }
 
-// Calculates the correct price for more than one item with different prices & batch pricing
-func TestCalculatePriceBatchPricing(t *testing.T) {
-	fetchItemFunc := func(sku string) (*entity.Item, error) {
-		batchSize := 2
-		batchPrice := 5
-		res := &entity.Item{
-			SKU:        sku,
-			BatchSize:  &batchSize,
-			BatchPrice: &batchPrice,
-		}
-		if sku == "A" {
-			res.UnitPrice = 10
-		} else {
-			res.UnitPrice = 20
-		}
-		return res, nil
+// Handles items with a zero unit price correctly
+func TestCalculatePrice_ZeroUnitPrice(t *testing.T) {
+	// Arrange
+	items := []*entity.Item{
+		{
+			SKU:       "A",
+			UnitPrice: 0,
+		},
 	}
-	skus := map[entity.SKU]int{
-		"A": 1,
-		"B": 5,
-	}
-	price, err := calculatePrice(skus, fetchItemFunc)
+
+	// Act
+	price, err := calculatePrice(items)
+
+	// Assert
 	assert.NilError(t, err)
-	assert.Equal(t, 40, price)
-}
-
-// An error is returned when the fetch item func also returns an error
-func TestCalculatePriceFetchItemError(t *testing.T) {
-	fetchItemFunc := func(sku string) (*entity.Item, error) {
-		return nil, errors.New("we returned an error")
-	}
-	skus := map[entity.SKU]int{
-		"A": 1,
-		"B": 5,
-	}
-	_, err := calculatePrice(skus, fetchItemFunc)
-	assert.Error(t, err, err.Error())
-}
-
-// Count the SKUs from a given list of none duplicated SKUs
-func TestCountSKUs(t *testing.T) {
-	skus := []entity.SKU{"A", "B", "C"}
-	expected := map[entity.SKU]int{
-		"A": 1,
-		"B": 1,
-		"C": 1,
-	}
-	res := countSKUs(skus)
-
-	assert.DeepEqual(t, expected, res)
-}
-
-// Given a list of SKUs with duplicates, the function should return a map with each SKU as a key and the value set to the number of occurrences in the list.
-func TestCountSKUs_WithDuplicates(t *testing.T) {
-	skus := []entity.SKU{"A", "B", "A", "C", "B", "A"}
-	expected := map[entity.SKU]int{
-		"A": 3,
-		"B": 2,
-		"C": 1,
-	}
-	result := countSKUs(skus)
-	assert.DeepEqual(t, expected, result)
-}
-
-// Given an empty list of SKUs, the function should return an empty map.
-func TestCountSKUs_EmptyList(t *testing.T) {
-	skus := []entity.SKU{}
-	expected := map[entity.SKU]int{}
-	result := countSKUs(skus)
-	assert.DeepEqual(t, expected, result)
+	assert.Equal(t, 0, price)
 }
