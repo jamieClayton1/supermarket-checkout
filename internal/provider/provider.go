@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"supermarket-checkout/internal/repository/basket"
 	"supermarket-checkout/internal/repository/item"
 	"supermarket-checkout/internal/service"
 )
@@ -13,8 +14,11 @@ type ServiceProvider struct {
 // Construct a service provider with API configurations
 func NewApiServiceProvider() ServiceProvider {
 	itemRepository := item.NewLocalItemRepository()
+	basketRepository := basket.NewLocalBasketRepository()
+
 	itemService := service.NewItemService(&itemRepository)
-	checkoutService := service.NewCheckoutService(&itemService)
+	basketService := service.NewBasketService(&basketRepository)
+	checkoutService := service.NewCheckoutService(&itemService, &basketService)
 
 	return ServiceProvider{
 		CheckoutService: &checkoutService,
