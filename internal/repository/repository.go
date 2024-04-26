@@ -9,6 +9,6 @@ type ItemRepository interface {
 
 // Basket repository interface
 type BasketRepository interface {
-	FetchBasket(basketId string) (*entity.Basket, error) 
+	FetchBasket(basketId string) (*entity.Basket, error)
 	PutBasketItem(item *entity.Item, basketId *string) (string, error)
 }

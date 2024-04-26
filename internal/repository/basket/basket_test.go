@@ -59,7 +59,5 @@ func TestLocalBasketRepository_PutBasketItem_NilIdGeneratesId(t *testing.T) {
 	if id == "" {
 		t.Error("empty id returned")
 	}
-	
+
 }
-
-

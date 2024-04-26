@@ -31,7 +31,7 @@ func TestCheckoutService_ScanItem_SKUFoundAndIdNotNil(t *testing.T) {
 
 	expected := basketId
 	response, err := checkoutService.ScanItem(sku, &basketId)
-	
+
 	assert.NilError(t, err)
 	assert.DeepEqual(t, expected, response)
 }
@@ -54,7 +54,7 @@ func TestCheckoutService_ScanItem_IdNil(t *testing.T) {
 
 	expected := basketId
 	response, err := checkoutService.ScanItem(sku, nil)
-	
+
 	assert.NilError(t, err)
 	assert.DeepEqual(t, expected, response)
 }
@@ -71,7 +71,7 @@ func TestCheckoutService_ScanItem_SkuNotFoundErrors(t *testing.T) {
 
 	checkoutService := NewCheckoutService(&itemService, nil)
 	_, err := checkoutService.ScanItem(sku, &basketId)
-	
+
 	assert.Error(t, err, err.Error())
 }
 
@@ -81,8 +81,8 @@ func TestCheckoutService_FetchPrice_ValidBasketId(t *testing.T) {
 	bskt := entity.Basket{
 		Items: []*entity.Item{
 			{
-				SKU:        "A",
-				UnitPrice:  100,
+				SKU:       "A",
+				UnitPrice: 100,
 			},
 		},
 	}
@@ -95,7 +95,7 @@ func TestCheckoutService_FetchPrice_ValidBasketId(t *testing.T) {
 
 	expected := 100
 	response, err := checkoutService.FetchPrice(basketId)
-	
+
 	assert.NilError(t, err)
 	assert.DeepEqual(t, expected, response)
 }
@@ -111,10 +111,9 @@ func TestCheckoutService_FetchPrice_InvalidBasketIdErrors(t *testing.T) {
 	checkoutService := NewCheckoutService(nil, &basketService)
 
 	_, err := checkoutService.FetchPrice(basketId)
-	
+
 	assert.Error(t, err, err.Error())
 }
-
 
 // Calculates the correct price for a batch of items with a batch price and batch size
 func TestBatchPriceWithBatchItems(t *testing.T) {
@@ -205,24 +204,24 @@ func TestCalculatePrice_MultipleItemsNoBatchPricing(t *testing.T) {
 	// Arrange
 	items := []*entity.Item{
 		{
-			SKU:        "A",
-			UnitPrice:  100,
+			SKU:       "A",
+			UnitPrice: 100,
 		},
 		{
-			SKU:        "A",
-			UnitPrice:  100,
+			SKU:       "A",
+			UnitPrice: 100,
 		},
 		{
-			SKU:        "A",
-			UnitPrice:  100,
+			SKU:       "A",
+			UnitPrice: 100,
 		},
 		{
-			SKU:        "B",
-			UnitPrice:  50,
+			SKU:       "B",
+			UnitPrice: 50,
 		},
 		{
-			SKU:        "B",
-			UnitPrice:  50,
+			SKU:       "B",
+			UnitPrice: 50,
 		},
 		{
 			SKU:       "C",

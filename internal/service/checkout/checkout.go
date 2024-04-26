@@ -10,19 +10,19 @@ import (
 
 // Checkout service, containing an Item service
 type CheckoutService struct {
-	ItemService *item.ItemService
+	ItemService   *item.ItemService
 	BasketService *basket.BasketService
 }
 
 // Construct a checkout service
 func NewCheckoutService(itemService *item.ItemService, basketService *basket.BasketService) CheckoutService {
 	return CheckoutService{
-		ItemService: itemService,
+		ItemService:   itemService,
 		BasketService: basketService,
 	}
 }
 
-// Scan an item to an existing basket if a basketId is provided, creating a new basket and returning the basketId if not 
+// Scan an item to an existing basket if a basketId is provided, creating a new basket and returning the basketId if not
 func (checkoutService *CheckoutService) ScanItem(sku string, basketId *string) (string, error) {
 	item, err := checkoutService.ItemService.FetchItem(sku)
 	if err != nil {
@@ -44,7 +44,7 @@ func (checkoutService *CheckoutService) FetchPrice(basketId string) (price int, 
 	price, err = calculatePrice(basket.Items)
 	if err != nil {
 		err = fmt.Errorf("fetching price: %s", err)
-		return 
+		return
 	}
 	return
 }
@@ -56,7 +56,7 @@ func batchPrice(price int, units int, batchPrice int, batchSize int) int {
 	if batchPrice == 0 && batchSize == 0 {
 		return price * units
 	}
-	
+
 	// Calculate batch & regular unit counts
 	batches := int(math.Floor(float64(units) / float64(batchSize)))
 	regulars := units % batchSize

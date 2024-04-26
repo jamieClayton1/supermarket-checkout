@@ -49,11 +49,10 @@ func TestBasketService_AddBasketItem_ItemAndIdNotNil(t *testing.T) {
 
 	expected := basketId
 	response, err := service.AddBasketItem(&item, &basketId)
-	
+
 	assert.NilError(t, err)
 	assert.DeepEqual(t, expected, response)
 }
-
 
 // When we add an item to the basket without a provided basketId, no error and the new basketId is returned
 func TestBasketService_AddBasketItem_IdNilGeneratesId(t *testing.T) {
@@ -65,7 +64,7 @@ func TestBasketService_AddBasketItem_IdNilGeneratesId(t *testing.T) {
 
 	expected := basketId
 	response, err := service.AddBasketItem(&item, nil)
-	
+
 	assert.NilError(t, err)
 	assert.DeepEqual(t, expected, response)
 }
@@ -93,6 +92,6 @@ func TestBasketService_AddBasketItem_ErrWithRepoErr(t *testing.T) {
 	service := NewBasketService(basketRepository)
 
 	_, err := service.AddBasketItem(&item, &basketId)
-	
+
 	assert.Error(t, err, expectedErr.Error())
 }

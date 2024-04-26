@@ -27,7 +27,7 @@ func NewAPI(serviceProvider *provider.ServiceProvider) *API {
 func (api API) Serve() {
 	router := mux.NewRouter()
 	router.HandleFunc("/checkout/price", FetchCheckoutPriceHandler(api.ServiceProvider)).Methods("POST") // Use POST as pricing schema is not idempotent
-	log.Fatal(http.ListenAndServe(":80", router)) // Customise behind an environment variable - for ease of use, we'll use default HTTP port
+	log.Fatal(http.ListenAndServe(":80", router))                                                        // Customise behind an environment variable - for ease of use, we'll use default HTTP port
 }
 
 // Construct a handle for scanning an item, given a service provider
@@ -52,7 +52,6 @@ func ScanItemHandler(provider *provider.ServiceProvider) http.HandlerFunc {
 		})
 	}
 }
-
 
 // Construct a handle for fetching a checkout price, given a service provider
 func FetchCheckoutPriceHandler(provider *provider.ServiceProvider) http.HandlerFunc {
