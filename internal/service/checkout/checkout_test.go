@@ -1,12 +1,116 @@
 package checkout
 
 import (
+	"errors"
 	"supermarket-checkout/internal/entity"
+	"supermarket-checkout/internal/repository/mock"
+	"supermarket-checkout/internal/service/basket"
+	"supermarket-checkout/internal/service/item"
 	"supermarket-checkout/internal/util"
 	"testing"
 
+	"go.uber.org/mock/gomock"
 	"gotest.tools/assert"
 )
+
+func TestCheckoutService_ScanItem_SKUFoundAndIdNotNil(t *testing.T) {
+	basketId := "valid"
+	sku := "A"
+	i := entity.Item{}
+
+	basketRepository := mock.NewMockBasketRepository(gomock.NewController(t))
+	basketRepository.EXPECT().PutBasketItem(gomock.Eq(&i), gomock.Eq(&basketId)).Return(basketId, nil)
+	basketService := basket.NewBasketService(basketRepository)
+
+	itemRepository := mock.NewMockItemRepository(gomock.NewController(t))
+	itemRepository.EXPECT().FetchItem(gomock.Eq(sku)).Return(&i, nil)
+	itemService := item.NewItemService(itemRepository)
+
+	checkoutService := NewCheckoutService(&itemService, &basketService)
+
+	expected := basketId
+	response, err := checkoutService.ScanItem(sku, &basketId)
+	
+	assert.NilError(t, err)
+	assert.DeepEqual(t, expected, response)
+}
+
+func TestCheckoutService_ScanItem_IdNil(t *testing.T) {
+	basketId := "new"
+	sku := "A"
+	i := entity.Item{}
+
+	basketRepository := mock.NewMockBasketRepository(gomock.NewController(t))
+	basketRepository.EXPECT().PutBasketItem(gomock.Eq(&i), nil).Return(basketId, nil)
+	basketService := basket.NewBasketService(basketRepository)
+
+	itemRepository := mock.NewMockItemRepository(gomock.NewController(t))
+	itemRepository.EXPECT().FetchItem(gomock.Eq(sku)).Return(&i, nil)
+	itemService := item.NewItemService(itemRepository)
+
+	checkoutService := NewCheckoutService(&itemService, &basketService)
+
+	expected := basketId
+	response, err := checkoutService.ScanItem(sku, nil)
+	
+	assert.NilError(t, err)
+	assert.DeepEqual(t, expected, response)
+}
+
+func TestCheckoutService_ScanItem_SkuNotFoundErrors(t *testing.T) {
+	expectedErr := errors.New("test error")
+	basketId := "new"
+	sku := "A"
+
+	itemRepository := mock.NewMockItemRepository(gomock.NewController(t))
+	itemRepository.EXPECT().FetchItem(gomock.Eq(sku)).Return(nil, expectedErr)
+	itemService := item.NewItemService(itemRepository)
+
+	checkoutService := NewCheckoutService(&itemService, nil)
+	_, err := checkoutService.ScanItem(sku, &basketId)
+	
+	assert.Error(t, err, err.Error())
+}
+
+
+func TestCheckoutService_FetchPrice_ValidBasketId(t *testing.T) {
+	basketId := "valid"
+	bskt := entity.Basket{
+		Items: []*entity.Item{
+			{
+				SKU:        "A",
+				UnitPrice:  100,
+			},
+		},
+	}
+
+	basketRepository := mock.NewMockBasketRepository(gomock.NewController(t))
+	basketRepository.EXPECT().FetchBasket(gomock.Eq(basketId)).Return(&bskt, nil)
+	basketService := basket.NewBasketService(basketRepository)
+
+	checkoutService := NewCheckoutService(nil, &basketService)
+
+	expected := 100
+	response, err := checkoutService.FetchPrice(basketId)
+	
+	assert.NilError(t, err)
+	assert.DeepEqual(t, expected, response)
+}
+
+func TestCheckoutService_FetchPrice_InvalidBasketIdErrors(t *testing.T) {
+	basketId := "invalid"
+
+	basketRepository := mock.NewMockBasketRepository(gomock.NewController(t))
+	basketRepository.EXPECT().FetchBasket(gomock.Eq(basketId)).Return(nil, errors.New("test error"))
+	basketService := basket.NewBasketService(basketRepository)
+
+	checkoutService := NewCheckoutService(nil, &basketService)
+
+	_, err := checkoutService.FetchPrice(basketId)
+	
+	assert.Error(t, err, err.Error())
+}
+
 
 // Calculates the correct price for a batch of items with a batch price and batch size
 func TestBatchPriceWithBatchItems(t *testing.T) {
