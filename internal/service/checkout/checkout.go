@@ -4,19 +4,34 @@ import (
 	"fmt"
 	"math"
 	"supermarket-checkout/internal/entity"
+	"supermarket-checkout/internal/service/basket"
 	"supermarket-checkout/internal/service/item"
 )
 
 // Checkout service, containing an Item service
 type CheckoutService struct {
 	ItemService *item.ItemService
+	BasketService *basket.BasketService
 }
 
 // Construct a checkout service
-func NewCheckoutService(itemService *item.ItemService) CheckoutService {
+func NewCheckoutService(itemService *item.ItemService, basketService *basket.BasketService) CheckoutService {
 	return CheckoutService{
 		ItemService: itemService,
+		BasketService: basketService,
 	}
+}
+
+func (checkoutService *CheckoutService) ScanItem(sku string, basketId *string) (string, error) {
+	item, err := checkoutService.ItemService.FetchItem(sku)
+	if err != nil {
+		return "", fmt.Errorf("fetching item to scan: %s", err)
+	}
+	id, err := checkoutService.BasketService.AddBasketItem(item, basketId)
+	if err != nil {
+		return "", fmt.Errorf("adding item to basket: %s", err)
+	}
+	return id, nil
 }
 
 // Fetch a price from the checkout service

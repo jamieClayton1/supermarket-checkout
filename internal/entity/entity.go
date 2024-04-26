@@ -11,6 +11,10 @@ type Item struct {
 	BatchPrice *int
 }
 
+type Basket struct {
+	Items []*Item
+}
+
 // Request body representation of a fetch checkout price request
 type FetchCheckoutPriceRequest struct {
 	ItemSKUs []SKU `json:"item_skus"`
