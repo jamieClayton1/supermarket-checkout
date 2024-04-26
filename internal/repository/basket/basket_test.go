@@ -17,7 +17,7 @@ func TestLocalBasketRepository_PutBasketFetchBasket(t *testing.T) {
 		BatchSize:  util.Pointer(3),
 		BatchPrice: util.Pointer(130),
 	}
-	basketId, err := repo.PutBasketItem(&item, nil)
+	basketId, err := repo.AddBasketItem(&item, nil)
 	assert.NilError(t, err)
 
 	expected := &entity.Basket{
@@ -39,7 +39,7 @@ func TestLocalBasketRepository_FetchBasket_NotExistErrors(t *testing.T) {
 // When a nil item is provided, an error is returned
 func TestLocalBasketRepository_PutBasketItem_NilItemErrors(t *testing.T) {
 	repo := NewLocalBasketRepository()
-	_, err := repo.PutBasketItem(nil, nil)
+	_, err := repo.AddBasketItem(nil, nil)
 
 	assert.Error(t, err, err.Error())
 }
@@ -53,7 +53,7 @@ func TestLocalBasketRepository_PutBasketItem_NilIdGeneratesId(t *testing.T) {
 		BatchSize:  util.Pointer(3),
 		BatchPrice: util.Pointer(130),
 	}
-	id, err := repo.PutBasketItem(&item, nil)
+	id, err := repo.AddBasketItem(&item, nil)
 
 	assert.NilError(t, err)
 	if id == "" {

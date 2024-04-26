@@ -20,5 +20,5 @@ func (basketService *BasketService) FetchBasket(basketId string) (*entity.Basket
 }
 
 func (basketService *BasketService) AddBasketItem(item *entity.Item, basketId *string) (string, error) {
-	return basketService.BasketRepository.PutBasketItem(item, basketId)
+	return basketService.BasketRepository.AddBasketItem(item, basketId)
 }

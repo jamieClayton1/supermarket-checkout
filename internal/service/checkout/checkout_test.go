@@ -20,7 +20,7 @@ func TestCheckoutService_ScanItem_SKUFoundAndIdNotNil(t *testing.T) {
 	i := entity.Item{}
 
 	basketRepository := mock.NewMockBasketRepository(gomock.NewController(t))
-	basketRepository.EXPECT().PutBasketItem(gomock.Eq(&i), gomock.Eq(&basketId)).Return(basketId, nil)
+	basketRepository.EXPECT().AddBasketItem(gomock.Eq(&i), gomock.Eq(&basketId)).Return(basketId, nil)
 	basketService := basket.NewBasketService(basketRepository)
 
 	itemRepository := mock.NewMockItemRepository(gomock.NewController(t))
@@ -43,7 +43,7 @@ func TestCheckoutService_ScanItem_IdNil(t *testing.T) {
 	i := entity.Item{}
 
 	basketRepository := mock.NewMockBasketRepository(gomock.NewController(t))
-	basketRepository.EXPECT().PutBasketItem(gomock.Eq(&i), nil).Return(basketId, nil)
+	basketRepository.EXPECT().AddBasketItem(gomock.Eq(&i), nil).Return(basketId, nil)
 	basketService := basket.NewBasketService(basketRepository)
 
 	itemRepository := mock.NewMockItemRepository(gomock.NewController(t))

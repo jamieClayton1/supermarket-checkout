@@ -26,7 +26,8 @@ func NewAPI(serviceProvider *provider.ServiceProvider) *API {
 // Serve the API on port 80
 func (api API) Serve() {
 	router := mux.NewRouter()
-	router.HandleFunc("/checkout/price", FetchCheckoutPriceHandler(api.ServiceProvider)).Methods("POST") // Use POST as pricing schema is not idempotent
+	router.HandleFunc("/checkout/scan", ScanItemHandler(api.ServiceProvider)).Methods("POST")
+	router.HandleFunc("/checkout/{basketId}/price", FetchCheckoutPriceHandler(api.ServiceProvider)).Methods("GET")
 	log.Fatal(http.ListenAndServe(":80", router))                                                        // Customise behind an environment variable - for ease of use, we'll use default HTTP port
 }
 
@@ -56,16 +57,12 @@ func ScanItemHandler(provider *provider.ServiceProvider) http.HandlerFunc {
 // Construct a handle for fetching a checkout price, given a service provider
 func FetchCheckoutPriceHandler(provider *provider.ServiceProvider) http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
-		body, err := UnpackBody[entity.FetchCheckoutPriceRequest](res, req)
-		if err != nil {
-			SendError(res, http.StatusBadRequest, err.Error())
+		params := mux.Vars(req)
+		if params["basketId"] == "" {
+			SendError(res, http.StatusBadRequest, "provide a valid basketId")
 			return
 		}
-		if body.BasketId == "" {
-			SendError(res, http.StatusBadRequest, "provide a basket_id")
-			return
-		}
-		price, err := provider.CheckoutService.FetchPrice(body.BasketId)
+		price, err := provider.CheckoutService.FetchPrice(params["basketId"])
 		if err != nil {
 			SendError(res, http.StatusInternalServerError, err.Error())
 			return

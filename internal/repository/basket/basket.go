@@ -29,7 +29,7 @@ func (basketRepository *LocalBasketRepository) FetchBasket(basketId string) (*en
 }
 
 // Put a basket itme into the local basket repository basket, given the basketId
-func (basketRepository *LocalBasketRepository) PutBasketItem(item *entity.Item, basketId *string) (string, error) {
+func (basketRepository *LocalBasketRepository) AddBasketItem(item *entity.Item, basketId *string) (string, error) {
 	if item == nil {
 		return "", fmt.Errorf("nil item provided")
 	}

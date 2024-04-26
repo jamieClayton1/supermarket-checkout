@@ -92,8 +92,8 @@ func (mr *MockBasketRepositoryMockRecorder) FetchBasket(basketId any) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchBasket", reflect.TypeOf((*MockBasketRepository)(nil).FetchBasket), basketId)
 }
 
-// PutBasketItem mocks base method.
-func (m *MockBasketRepository) PutBasketItem(item *entity.Item, basketId *string) (string, error) {
+// AddBasketItem mocks base method.
+func (m *MockBasketRepository) AddBasketItem(item *entity.Item, basketId *string) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "PutBasketItem", item, basketId)
 	ret0, _ := ret[0].(string)
@@ -101,8 +101,8 @@ func (m *MockBasketRepository) PutBasketItem(item *entity.Item, basketId *string
 	return ret0, ret1
 }
 
-// PutBasketItem indicates an expected call of PutBasketItem.
-func (mr *MockBasketRepositoryMockRecorder) PutBasketItem(item, basketId any) *gomock.Call {
+// AddBasketItem indicates an expected call of AddBasketItem.
+func (mr *MockBasketRepositoryMockRecorder) AddBasketItem(item, basketId any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PutBasketItem", reflect.TypeOf((*MockBasketRepository)(nil).PutBasketItem), item, basketId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PutBasketItem", reflect.TypeOf((*MockBasketRepository)(nil).AddBasketItem), item, basketId)
 }

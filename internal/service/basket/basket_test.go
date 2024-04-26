@@ -44,7 +44,7 @@ func TestBasketService_AddBasketItem_ItemAndIdNotNil(t *testing.T) {
 	basketId := "valid"
 	item := entity.Item{}
 	basketRepository := mock.NewMockBasketRepository(gomock.NewController(t))
-	basketRepository.EXPECT().PutBasketItem(gomock.Eq(&item), gomock.Eq(&basketId)).Return(basketId, nil)
+	basketRepository.EXPECT().AddBasketItem(gomock.Eq(&item), gomock.Eq(&basketId)).Return(basketId, nil)
 	service := NewBasketService(basketRepository)
 
 	expected := basketId
@@ -59,7 +59,7 @@ func TestBasketService_AddBasketItem_IdNilGeneratesId(t *testing.T) {
 	basketId := "new"
 	item := entity.Item{}
 	basketRepository := mock.NewMockBasketRepository(gomock.NewController(t))
-	basketRepository.EXPECT().PutBasketItem(gomock.Eq(&item), gomock.Nil()).Return(basketId, nil)
+	basketRepository.EXPECT().AddBasketItem(gomock.Eq(&item), gomock.Nil()).Return(basketId, nil)
 	service := NewBasketService(basketRepository)
 
 	expected := basketId
@@ -74,7 +74,7 @@ func TestBasketService_AddBasketItem_ItemNilErrors(t *testing.T) {
 	expectedErr := fmt.Errorf("no item")
 	basketId := "valid"
 	basketRepository := mock.NewMockBasketRepository(gomock.NewController(t))
-	basketRepository.EXPECT().PutBasketItem(gomock.Nil(), gomock.Eq(&basketId)).Return(basketId, expectedErr)
+	basketRepository.EXPECT().AddBasketItem(gomock.Nil(), gomock.Eq(&basketId)).Return(basketId, expectedErr)
 	service := NewBasketService(basketRepository)
 
 	_, err := service.AddBasketItem(nil, &basketId)
@@ -88,7 +88,7 @@ func TestBasketService_AddBasketItem_ErrWithRepoErr(t *testing.T) {
 	basketId := "valid"
 	item := entity.Item{}
 	basketRepository := mock.NewMockBasketRepository(gomock.NewController(t))
-	basketRepository.EXPECT().PutBasketItem(gomock.Eq(&item), gomock.Eq(&basketId)).Return(basketId, expectedErr)
+	basketRepository.EXPECT().AddBasketItem(gomock.Eq(&item), gomock.Eq(&basketId)).Return(basketId, expectedErr)
 	service := NewBasketService(basketRepository)
 
 	_, err := service.AddBasketItem(&item, &basketId)
